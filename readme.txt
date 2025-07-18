@@ -9,7 +9,7 @@ Visualization tools (Pandas, Seaborn)
 Feature engineering and transformation
 Day 3: Regularization + Deep Learning Overview
 Overfitting, underfitting
-L1/L2 regularization
+L1/L2 regularization done
 Intro to neural networks and deep learning flow
 Day 4: NLP & Embeddings
 Bag-of-words vs word embeddings
