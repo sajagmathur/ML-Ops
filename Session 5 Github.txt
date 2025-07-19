@@ -1,0 +1,124 @@
+**GIT:**
+
+- Helps managing and tracking changes within CI/CD pipeline
+- Keeps history of experiments including codes, configuration files including who made changes, when and why they made changes
+- It helps track different versions of the code, collaborate with teams etc.
+
+**States in GIT:**
+
+- **Working Directory:**  Write code here
+- **Staging Area:** Stage code here
+- **GIT Directory or Repository**
+    - Check out the project
+    - Stage fixes between staging area
+        - Commit changes to **repository**
+
+**Demonstration of GIT:**
+
+- You can share email id to get access as a collaborator
+- Readme File shows up on the top of any Github Page
+
+1. Download visual studio code and install
+2. Install git from here: [Git - Downloading Package](https://git-scm.com/downloads/win)
+3. Enable github extention and github code extention
+4. Install the extention and login 
+5. Clone repository
+6. Make any changes, check staged folder
+7.  Commit those changes —>
+    1. git status
+    2. git commit -m “descriptive message
+    3. git push —> push code to git
+    4. git pull —> pulls updated code
+8. Check in github —> the changes will reflect there
+9. Set your username and password in git:
+    1. `git config --global user.name "John Doe"`
+    2. `git config --global user.email` sajagmathur@gmail.com
+10. Create new branch: git checkout -b “test” —> git push --set-upstream origin test
+    1. Set upstraem branch
+11. Create another file
+    1. git add .
+    2. git commit -m “message”
+    3. git push
+12. Create a pull request:
+    1. Add to main branch
+    2. Once you create pull request, 
+13. Sends for approval
+14. Merge pull request
+
+![image.png](attachment:6da52b41-38b8-468d-a7d0-9326af6acc6a:image.png)
+
+**Data Version Control:**
+
+Traditional Git:
+
+- Great for **code**.
+- Not suitable for **large files** (like datasets or trained models).
+- No easy way to **track experiments**, **reproduce results**, or **share data pipelines**.
+
+DVC solves these problems by:
+
+- Letting you **version control data** and **machine learning models**.
+- Creating **reproducible pipelines**.
+- Supporting **remote storage** (AWS S3, Google Drive, etc.).
+- Keeping your Git repo clean by not storing large files directly.
+
+---
+
+Use Cases:
+
+- Track and save data and ML models
+- Crete and switch between versions of data and ML models
+- Understand how ML models were built
+- Compare model metries among experimens
+- Adopt engineering tools
+
+**Feature Store:**
+
+- Feast, Snowflake etc.
+
+![](attachment:c0ced476-fec1-4488-9380-2cc114124f73:image235.png)
+
+**Feast** (Feature Store) is an **open-source feature store** for **machine learning**. It’s a tool specifically designed to:
+
+- **Store**, **retrieve**, and **serve** ML features
+- Ensure **consistency** between training and production
+- Help **re-use features** across different models
+- Provide **low-latency online access** and **batch access**
+
+### ✅ Feast Is Good For:
+
+- Managing features used in ML models
+- Avoiding training/serving skew (by ensuring the same features are used for both)
+- Real-time feature retrieval for online inference
+
+---
+
+## 🧊 What is **Snowflake**?
+
+**Snowflake** is a **cloud data warehouse platform**. It’s designed for:
+
+- **Storing large amounts of structured data**
+- Running **analytics and SQL queries at scale**
+- Powering **BI dashboards**, **data pipelines**, **reporting**, and some ML
+
+It’s not just storage — it’s also a high-performance compute layer for querying and processing data.
+
+### ✅ Snowflake Is Good For:
+
+- General-purpose data warehousing
+- Running complex queries on massive datasets
+- Data ingestion, ETL/ELT pipelines
+- Storing data for downstream ML tasks (training)
+
+---
+
+- You can connect to existing infrastructure
+- Train define, retrieve features for training or inference
+
+Use Cases:
+
+- For Vector Storage
+- Versioning
+- INformation Retrieval
+- To document metadata
+- Feature storage, reuse, serving, management
