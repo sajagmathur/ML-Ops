@@ -1,0 +1,10 @@
+artifact_location: mlflow-artifacts:/187680409551424816/models/m-822019ad915942638d24ecbb7d47b0f8/artifacts
+creation_timestamp: 1752998029586
+experiment_id: '187680409551424816'
+last_updated_timestamp: 1752998034006
+model_id: m-822019ad915942638d24ecbb7d47b0f8
+model_type: ''
+name: ice_cream
+source_run_id: 58376a9d1ba94bf6bc27578d2026cd6f
+status: 2
+status_message: null
