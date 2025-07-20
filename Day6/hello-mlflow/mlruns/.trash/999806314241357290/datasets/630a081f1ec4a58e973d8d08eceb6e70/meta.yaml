@@ -1,0 +1,7 @@
+digest: 3d7edf3e
+name: dataset
+profile: '{"num_rows": 6, "num_elements": 6}'
+schema: '{"mlflow_colspec": [{"type": "long", "name": "temp", "required": true}]}'
+source: '{"tags": {"mlflow.user": "sajag", "mlflow.source.name": "c:\\Users\\sajag\\anaconda3\\Lib\\site-packages\\ipykernel_launcher.py",
+  "mlflow.source.type": "LOCAL"}}'
+source_type: code

@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/999806314241357290/d618db94a13a42149874636da71a82d7/artifacts
+deleted_time: 1753000274336
+end_time: 1752998164750
+entry_point_name: ''
+experiment_id: '999806314241357290'
+lifecycle_stage: deleted
+run_id: d618db94a13a42149874636da71a82d7
+run_name: persistent-stork-100
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1752998164699
+status: 3
+tags: []
+user_id: sajag

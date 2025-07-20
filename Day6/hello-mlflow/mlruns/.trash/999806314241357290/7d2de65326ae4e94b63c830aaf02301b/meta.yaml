@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/999806314241357290/7d2de65326ae4e94b63c830aaf02301b/artifacts
+deleted_time: 1753001208341
+end_time: 1753000699565
+entry_point_name: ''
+experiment_id: '999806314241357290'
+lifecycle_stage: deleted
+run_id: 7d2de65326ae4e94b63c830aaf02301b
+run_name: likeable-sow-125
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1753000318766
+status: 3
+tags: []
+user_id: sajag

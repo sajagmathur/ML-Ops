@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/999806314241357290/c6c12aba303441b48fa24f0d18663fa8/artifacts
+deleted_time: 1753001208341
+end_time: 1753001118627
+entry_point_name: ''
+experiment_id: '999806314241357290'
+lifecycle_stage: deleted
+run_id: c6c12aba303441b48fa24f0d18663fa8
+run_name: dapper-bat-709
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1753001111713
+status: 3
+tags: []
+user_id: sajag

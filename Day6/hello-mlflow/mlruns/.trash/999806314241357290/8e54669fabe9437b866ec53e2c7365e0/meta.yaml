@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/999806314241357290/8e54669fabe9437b866ec53e2c7365e0/artifacts
+deleted_time: 1753001208341
+end_time: 1753001106118
+entry_point_name: ''
+experiment_id: '999806314241357290'
+lifecycle_stage: deleted
+run_id: 8e54669fabe9437b866ec53e2c7365e0
+run_name: big-croc-381
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1753001106073
+status: 3
+tags: []
+user_id: sajag

@@ -1,0 +1,18 @@
+aliases: []
+creation_timestamp: 1753000361357
+current_stage: None
+deployment_job_state: null
+description: ''
+last_updated_timestamp: 1753000361357
+metrics: null
+model_id: m-2c3257b482684fbebb8215070b203667
+name: ice cream
+params: null
+run_id: 7d2de65326ae4e94b63c830aaf02301b
+run_link: ''
+source: models:/m-2c3257b482684fbebb8215070b203667
+status: READY
+status_message: null
+storage_location: mlflow-artifacts:/999806314241357290/models/m-2c3257b482684fbebb8215070b203667/artifacts
+user_id: null
+version: 5

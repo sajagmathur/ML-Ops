@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/999806314241357290/bebaa5de7a634366a364f4494b650b01/artifacts
+deleted_time: 1753001208341
+end_time: 1753001106028
+entry_point_name: ''
+experiment_id: '999806314241357290'
+lifecycle_stage: deleted
+run_id: bebaa5de7a634366a364f4494b650b01
+run_name: clumsy-yak-461
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1753001092165
+status: 3
+tags: []
+user_id: sajag
