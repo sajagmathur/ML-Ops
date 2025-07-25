@@ -155,6 +155,9 @@ jobs:
           echo "${{ secrets.KUBECONFIG_DATA }}" > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
+      - name: Test kubectl connectivity
+        run: kubectl get nodes
+      
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f Day10/workshop/deployment.yaml
