@@ -10,6 +10,8 @@ import numpy as np
 import joblib
 import os
 
+
+
 # Load trained model
 try:
     model = joblib.load("model.pkl")
