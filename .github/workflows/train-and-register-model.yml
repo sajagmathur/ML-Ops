@@ -136,7 +136,7 @@ jobs:
   
   deploy-to-kubernetes:
     runs-on: ubuntu-latest
-    needs: build-and-push  # Make sure your image is pushed first
+    # needs: build-and-push  # Make sure your image is pushed first
 
     steps:
       - name: Checkout code
