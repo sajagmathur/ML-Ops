@@ -25,6 +25,7 @@ jobs:
         run: |
           $envPath = "$env:USERPROFILE\actions-cache\env"
           & "$envPath\Scripts\Activate.ps1"
+          Set-Location -Path Day10/workshop
           pip install --upgrade pip
           pip install -r requirements.txt
 
