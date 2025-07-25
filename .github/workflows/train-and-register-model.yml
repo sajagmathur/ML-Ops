@@ -1,5 +1,7 @@
 name: Train, Register, and Deploy Model
-
+permissions:
+  contents: write
+  
 on:
   push:
     branches: [Day10]
