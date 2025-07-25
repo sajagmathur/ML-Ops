@@ -1,7 +1,0 @@
-name: ml-regression-demo
-
-entry_points:
-  main:
-    parameters:
-      alpha: {type: float, default: 0.5}
-    command: "python src/train.py --alpha {alpha}"
