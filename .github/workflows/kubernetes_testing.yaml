@@ -61,3 +61,4 @@ jobs:
       - name: Get pods in all namespaces
         shell: powershell
         run: kubectl get pods --all-namespaces
+#tryagain
