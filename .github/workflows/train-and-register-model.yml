@@ -1,7 +1,7 @@
 name: Train, Register, and Deploy Model
 permissions:
   contents: write
-  
+
 on:
   push:
     branches: [Day10]
@@ -82,6 +82,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Pull latest changes (including model.pkl)
+        shell: powershell
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "GitHub Actions"
+          git pull origin Day10
 
       - name: List files in working directory (debug)
         shell: powershell
