@@ -1,11 +1,11 @@
 name: Debug Kubernetes Connectivity
 
 on:
-  workflow_dispatch:  # manually trigger
+  workflow_dispatch:  # Manually trigger
 
 jobs:
   kubectl-connectivity-check:
-    runs-on: self-hosted  # your runner label (Docker Desktop with kind)
+    runs-on: self-hosted  # Use your own label if different
 
     steps:
       - name: Show current user
@@ -15,8 +15,8 @@ jobs:
       - name: List .kube directory contents
         shell: powershell
         run: |
-          if (Test-Path "$HOME\.kube") {
-            Get-ChildItem "$HOME\.kube" -Force
+          if (Test-Path "$env:USERPROFILE\.kube") {
+            Get-ChildItem "$env:USERPROFILE\.kube" -Force
           } else {
             Write-Output ".kube directory does not exist"
           }
@@ -24,8 +24,9 @@ jobs:
       - name: Show kubeconfig content
         shell: powershell
         run: |
-          if (Test-Path "$HOME\.kube\config") {
-            Get-Content "$HOME\.kube\config"
+          $kubeConfig = "$env:USERPROFILE\.kube\config"
+          if (Test-Path $kubeConfig) {
+            Get-Content $kubeConfig
           } else {
             Write-Output "No kubeconfig file found"
           }
@@ -33,21 +34,21 @@ jobs:
       - name: Create .kube directory if missing
         shell: powershell
         run: |
-          if (-not (Test-Path "$HOME\.kube")) {
-            New-Item -ItemType Directory -Path "$HOME\.kube" | Out-Null
+          $kubeDir = "$env:USERPROFILE\.kube"
+          if (-not (Test-Path $kubeDir)) {
+            New-Item -ItemType Directory -Path $kubeDir | Out-Null
           }
 
       - name: Setup kubeconfig from secret
         shell: powershell
         run: |
-          $kubeconfigData = @"${{ secrets.KUBECONFIG_DATA }}"@
-          $kubeconfigPath = "$HOME\.kube\config"
+          $kubeconfigData = "${{ secrets.KUBECONFIG_DATA }}"
+          $kubeconfigPath = "$env:USERPROFILE\.kube\config"
           $kubeconfigData | Out-File -FilePath $kubeconfigPath -Encoding ascii -Force
-          # OPTIONAL: skip icacls to avoid permissions issue, unless absolutely needed
 
       - name: Show kubeconfig file after write
         shell: powershell
-        run: Get-Content "$HOME\.kube\config"
+        run: Get-Content "$env:USERPROFILE\.kube\config"
 
       - name: Check kubectl version
         shell: powershell
