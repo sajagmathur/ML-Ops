@@ -3,8 +3,23 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 import train as pipeline
 
+import subprocess
+
+# Start MLflow server in the background
+process = subprocess.Popen(
+    ["mlflow", "server", "--host", "127.0.0.1", "--port", "5000"]
+)
+
+print("MLflow server started in the background.")
+
+#open mlflow ui in browser
+import webbrowser
+webbrowser.open("http://127.0.0.1:5000")
+
+print("MLflow UI opened in the browser.")
+
    # Start MLflow tracking]
-mlflow.set_tracking_uri("http://192.168.1.36:5001")
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment("Experiment_Name")
 
 df = pd.read_csv("ice_cream.csv")
