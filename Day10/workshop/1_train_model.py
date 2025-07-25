@@ -1,5 +1,6 @@
 # train.py
-
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression

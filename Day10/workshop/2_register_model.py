@@ -1,5 +1,6 @@
 # register.py
-
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 import joblib
 import mlflow
 import mlflow.sklearn
