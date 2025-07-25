@@ -111,7 +111,7 @@ jobs:
         working-directory: Day10/workshop
   build-docker-image:
     runs-on: ubuntu-latest
-    needs: register-model   # wait for register-model to finish
+    needs: run-fastapi   # wait for register-model to finish
 
     steps:
       - name: Checkout code
