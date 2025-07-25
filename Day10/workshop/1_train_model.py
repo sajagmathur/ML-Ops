@@ -20,4 +20,4 @@ model.fit(X_train, y_train)
 joblib.dump(model, "model.pkl")
 joblib.dump((X_test, y_test), "test_data.pkl")
 
-print("✅ Model trained and saved to model.pkl")
+print(" Model trained and saved to model.pkl")

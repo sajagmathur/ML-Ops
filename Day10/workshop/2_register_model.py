@@ -54,4 +54,4 @@ with mlflow.start_run() as run:
         name="IceCreamModel"
     )
 
-print("✅ Model registered to MLflow")
+print("Model registered to MLflow")
