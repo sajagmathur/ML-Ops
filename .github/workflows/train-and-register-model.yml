@@ -73,6 +73,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: List files in working directory (debug)
+        shell: powershell
+        run: |
+          Set-Location -Path Day10/workshop
+          Get-ChildItem -Recurse
+
       - name: Setup Python environment for app
         shell: powershell
         run: |
@@ -81,28 +87,47 @@ jobs:
             python -m venv $envPath
           }
           & "$envPath\Scripts\Activate.ps1"
-          pip install --quiet fastapi uvicorn numpy
+          pip install --quiet fastapi uvicorn numpy joblib
 
-      - name: Run FastAPI app (app.py)
+      - name: Check if model.pkl exists
+        shell: powershell
+        run: |
+          if (-not (Test-Path "Day10/workshop/model.pkl")) {
+            Write-Error "model.pkl not found, aborting"
+            exit 1
+          } else {
+            Write-Host "model.pkl found"
+          }
+
+      - name: Run FastAPI app with uvicorn (logs to file)
         shell: powershell
         run: |
           $envPath = "$env:USERPROFILE\actions-cache\env"
           & "$envPath\Scripts\Activate.ps1"
           Set-Location -Path Day10/workshop
-          Start-Process -NoNewWindow -FilePath python -ArgumentList "app.py"
 
-      - name: Wait a bit for app to start
-        shell: powershell
-        run: Start-Sleep -Seconds 10
+          Start-Process -NoNewWindow -FilePath uvicorn -ArgumentList "app:app --host 0.0.0.0 --port 5001" -RedirectStandardOutput uvicorn.log -RedirectStandardError uvicorn-error.log -PassThru
 
-      - name: Check app is running
+      - name: Wait for app to start and check readiness
         shell: powershell
         run: |
-          try {
-            Invoke-RestMethod -Uri http://localhost:5001/
-            Write-Host "App is running!"
+          $maxRetries = 10
+          $uri = "http://localhost:5001/"
+          $success = $false
+          for ($i = 1; $i -le $maxRetries; $i++) {
+            try {
+              Invoke-RestMethod -Uri $uri -TimeoutSec 5 | Out-Null
+              Write-Host "App is running!"
+              $success = $true
+              break
+            } catch {
+              Write-Host "Attempt $i: App not responding yet, retrying in 3 seconds..."
+              Start-Sleep -Seconds 3
+            }
           }
-          catch {
-            Write-Host "App did not respond"
+          if (-not $success) {
+            Write-Host "App did not respond after $maxRetries attempts. Dumping uvicorn logs:"
+            Get-Content uvicorn.log
+            Get-Content uvicorn-error.log
             exit 1
           }

@@ -11,7 +11,13 @@ import joblib
 import os
 
 # Load trained model
-model = joblib.load("model.pkl")
+try:
+    model = joblib.load("model.pkl")
+except Exception as e:
+    import sys
+    print(f"Error loading model: {e}", file=sys.stderr)
+    raise
+
 
 # Setup FastAPI app
 app = FastAPI()
