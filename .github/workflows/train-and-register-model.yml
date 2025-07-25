@@ -99,3 +99,6 @@ jobs:
         shell: powershell
         run: |
           docker push "$env:DOCKER_USERNAME/icecream-api:latest"
+
+          #retry
+          
