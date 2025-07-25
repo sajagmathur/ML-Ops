@@ -79,11 +79,7 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         shell: powershell
         run: |
-          $password = $env:DOCKER_PASSWORD | ConvertTo-SecureString -AsPlainText -Force
-          $cred = New-Object System.Management.Automation.PSCredential ($env:DOCKER_USERNAME, $password)
-          docker login --username $env:DOCKER_USERNAME --password-stdin <<< $env:DOCKER_PASSWORD
-          # Alternatively:
-          # echo $env:DOCKER_PASSWORD | docker login --username $env:DOCKER_USERNAME --password-stdin
+          $Env:DOCKER_PASSWORD | docker login --username $Env:DOCKER_USERNAME --password-stdin
 
       - name: Build Docker image
         shell: powershell
