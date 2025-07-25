@@ -107,5 +107,5 @@ jobs:
           pip install -r Day10/workshop/requirements.txt
 
       - name: Run FastAPI app
-        run: python 3_app.py
+        run: python app.py
         working-directory: Day10/workshop
