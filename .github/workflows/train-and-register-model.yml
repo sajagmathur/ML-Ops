@@ -138,7 +138,7 @@ jobs:
               $success = $true
               break
             } catch {
-              Write-Host "Attempt $i: App not responding yet, retrying in 3 seconds..."
+              Write-Host "Attempt ${i}: App not responding yet, retrying in 3 seconds..."
               Start-Sleep -Seconds 3
             }
           }
