@@ -35,7 +35,15 @@ jobs:
           path: |
             Day10/workshop/model.pkl
             Day10/workshop/test_data.pkl
-
+      - name: Commit and push model.pkl to repo
+        shell: powershell
+        run: |
+          Set-Location -Path Day10/workshop
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add model.pkl test_data.pkl
+          git commit -m "Add trained model artifacts"
+          git push
   register-model:
     runs-on: IceCream
     needs: train-model
