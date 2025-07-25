@@ -27,13 +27,12 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
-import pickle
+import joblib
 import numpy as np
-import uvicorn
 
 # Load the saved model
-with open("linear_regression_model.pkl", "rb") as f:
-    model = pickle.load(f)
+with open("model.pkl", "rb") as f:
+    model = joblib.load("model.pkl")
 
 app = FastAPI()
 
@@ -50,6 +49,3 @@ def predict_sales(data: InputData):
     input_array = np.array(data.temps).reshape(-1, 1)
     prediction = model.predict(input_array)
     return {"predicted_sales": prediction.tolist()}
-
-if __name__ == "__main__":
-    uvicorn.run("app:app", host="0.0.0.0", port=5001)

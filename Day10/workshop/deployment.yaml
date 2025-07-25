@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: ice-cream-api
-          image: edquest/icecream_api:latest
+          image: sajagmathur/icecream-api   # <-- Make sure this matches your Docker Hub repo exactly!
           command: ["python"]
           args:
             - app.py
