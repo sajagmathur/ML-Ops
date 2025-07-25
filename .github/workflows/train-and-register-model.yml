@@ -84,7 +84,16 @@ jobs:
       - name: Build Docker image
         shell: powershell
         run: |
-          docker build -t "$env:DOCKER_USERNAME/icecream-api:latest" .
+          $pw = $Env:DOCKER_PASSWORD.Trim()
+          $bytes = [System.Text.Encoding]::UTF8.GetBytes("$pw`n")
+          $stream = [System.IO.MemoryStream]::new($bytes)
+          $process = Start-Process -FilePath docker -ArgumentList "login", "--username", $Env:DOCKER_USERNAME, "--password-stdin" -NoNewWindow -PassThru -RedirectStandardInput "pipe"
+          $process.StandardInput.BaseStream.Write($bytes, 0, $bytes.Length)
+          $process.StandardInput.Close()
+          $process.WaitForExit()
+          if ($process.ExitCode -ne 0) {
+          throw "Docker login failed with exit code $($process.ExitCode)"
+          }
 
       - name: Push Docker image
         shell: powershell
