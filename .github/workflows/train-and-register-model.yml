@@ -6,23 +6,26 @@ on:
 
 jobs:
   train-model:
-    runs-on: IceCream
+    runs-on: IceCream  # Your self-hosted runner label
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Create python environment
-        shell: bash  # ✅ Force bash
+        shell: powershell
         run: |
-          CACHE_DIR="$HOME/actions-cache"
-          mkdir -p "$CACHE_DIR"
-          python -m venv "$CACHE_DIR/env"
+          $cacheDir = "$env:USERPROFILE\actions-cache"
+          if (-not (Test-Path $cacheDir)) {
+            New-Item -ItemType Directory -Path $cacheDir | Out-Null
+          }
+          python -m venv "$cacheDir\env"
 
       - name: Train and log to MLflow
-        shell: bash  # ✅ Force bash
+        shell: powershell
         run: |
-          CACHE_DIR="$HOME/actions-cache"
-          source "$CACHE_DIR/env/bin/activate"
-          pip install mlflow
-          cd Day10/workshop
+          $cacheDir = "$env:USERPROFILE\actions-cache"
+          # Activate virtual environment
+          & "$cacheDir\env\Scripts\Activate.ps1"
+          pip install --quiet mlflow
+          Set-Location -Path Day10/workshop
           python register.py
