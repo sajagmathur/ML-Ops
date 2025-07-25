@@ -27,12 +27,12 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
-import pickle
+import joblib
 import numpy as np
 
 # Load the saved model
 with open("model.pkl", "rb") as f:
-    model = pickle.load(f)
+    model = joblib.load("model.pkl")
 
 app = FastAPI()
 
