@@ -9,30 +9,54 @@ jobs:
 
     steps:
       - name: Show current user
+        shell: powershell
         run: whoami
 
       - name: List .kube directory contents
-        run: ls -la ~/.kube || echo ".kube directory does not exist"
+        shell: powershell
+        run: |
+          if (Test-Path "$HOME\.kube") {
+            Get-ChildItem "$HOME\.kube" -Force
+          } else {
+            Write-Output ".kube directory does not exist"
+          }
 
       - name: Show kubeconfig content
-        run: cat ~/.kube/config || echo "No kubeconfig file found"
+        shell: powershell
+        run: |
+          if (Test-Path "$HOME\.kube\config") {
+            Get-Content "$HOME\.kube\config"
+          } else {
+            Write-Output "No kubeconfig file found"
+          }
 
       - name: Create .kube directory if missing
-        run: mkdir -p ~/.kube
+        shell: powershell
+        run: |
+          if (-not (Test-Path "$HOME\.kube")) {
+            New-Item -ItemType Directory -Path "$HOME\.kube" | Out-Null
+          }
 
       - name: Setup kubeconfig from secret
+        shell: powershell
         run: |
-          echo "${{ secrets.KUBECONFIG_DATA }}" > ~/.kube/config
-          chmod 600 ~/.kube/config
+          $kubeconfigData = "${{ secrets.KUBECONFIG_DATA }}"
+          $kubeconfigPath = "$HOME\.kube\config"
+          $kubeconfigData | Out-File -FilePath $kubeconfigPath -Encoding ascii
+          icacls $kubeconfigPath /inheritance:r /grant:r "$env:USERNAME:(R)"
 
       - name: Show kubeconfig file after write
-        run: cat ~/.kube/config
+        shell: powershell
+        run: Get-Content "$HOME\.kube\config"
 
       - name: Check kubectl version
+        shell: powershell
         run: kubectl version --client
 
       - name: Get Kubernetes nodes
+        shell: powershell
         run: kubectl get nodes
 
       - name: Get pods in all namespaces
+        shell: powershell
         run: kubectl get pods --all-namespaces
