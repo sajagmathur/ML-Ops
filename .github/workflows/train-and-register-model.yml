@@ -7,22 +7,78 @@ on:
 jobs:
   train-model:
     runs-on: IceCream
+
     steps:
       - uses: actions/checkout@v3
-      # ... (your existing steps unchanged)
+
+      - name: Create Python environment
+        shell: powershell
+        run: |
+          $envPath = "$env:USERPROFILE\actions-cache\env"
+          if (-not (Test-Path $envPath)) {
+            python -m venv $envPath
+          }
+
+      - name: Train Model
+        shell: powershell
+        run: |
+          $envPath = "$env:USERPROFILE\actions-cache\env"
+          & "$envPath\Scripts\Activate.ps1"
+          pip install --quiet pandas scikit-learn joblib
+          Set-Location -Path Day10/workshop
+          python 1_train_model.py
+
+      - name: Upload model artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-artifacts
+          path: |
+            Day10/workshop/model.pkl
+            Day10/workshop/test_data.pkl
 
   register-model:
     runs-on: IceCream
     needs: train-model
+
     steps:
       - uses: actions/checkout@v3
-      # ... (your existing steps unchanged)
+
+      - name: Download model artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: model-artifacts
+          path: Day10/workshop
+
+      - name: Create Python environment
+        shell: powershell
+        run: |
+          $envPath = "$env:USERPROFILE\actions-cache\env"
+          if (-not (Test-Path $envPath)) {
+            python -m venv $envPath
+          }
+
+      - name: Register Model with MLflow
+        shell: powershell
+        run: |
+          $envPath = "$env:USERPROFILE\actions-cache\env"
+          & "$envPath\Scripts\Activate.ps1"
+          pip install --quiet mlflow scikit-learn joblib
+          Set-Location -Path Day10/workshop
+          python 2_register_model.py
 
   dockerize-model:
+      
     runs-on: IceCream
     needs: register-model
+
     steps:
       - uses: actions/checkout@v3
+
+      - name: Build Docker image locally
+        shell: powershell
+        run: |
+          $imageName = "icecream-api:latest"
+          docker build -t $imageName .
 
       - name: Stop and remove existing container if it exists
         shell: powershell
@@ -31,49 +87,15 @@ jobs:
           docker stop $containerName 2>$null
           docker rm $containerName 2>$null
 
-      - name: Build Docker image locally
+      - name: Run Docker container locally
         shell: powershell
         run: |
           $imageName = "icecream-api:latest"
           docker build -t $imageName Day10/workshop
-
-      - name: Run Docker container locally
-        shell: powershell
-        run: |
-          $containerName = "icecream-api"
-          docker run -d --name $containerName -p 5001:5001 icecream-api:latest
 
       - name: Confirm container is running
         shell: powershell
         run: |
           docker ps -f "name=icecream-api"
 
-  launch-app:
-    runs-on: IceCream
-    needs: dockerize-model
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Python environment
-        shell: powershell
-        run: |
-          $envPath = "$env:USERPROFILE\actions-cache\env"
-          if (-not (Test-Path $envPath)) {
-            python -m venv $envPath
-          }
-          & "$envPath\Scripts\Activate.ps1"
-          pip install fastapi uvicorn numpy
-
-      - name: Run the FastAPI app
-        shell: powershell
-        run: |
-          $envPath = "$env:USERPROFILE\actions-cache\env"
-          & "$envPath\Scripts\Activate.ps1"
-          Set-Location -Path Day10/workshop
-          Start-Process -NoNewWindow -FilePath python -ArgumentList "app.py"
-
-      - name: Wait and verify app running (optional)
-        shell: powershell
-        run: |
-          Start-Sleep -Seconds 10
-          Invoke-RestMethod -Uri http://localhost:5001/
+    
