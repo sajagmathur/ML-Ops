@@ -5,7 +5,7 @@ on:
 
 jobs:
   kubectl-connectivity-check:
-    runs-on: self-hosted  # make sure this matches your runner label
+    runs-on: self-hosted  # your runner label (Docker Desktop with kind)
 
     steps:
       - name: Show current user
@@ -40,10 +40,10 @@ jobs:
       - name: Setup kubeconfig from secret
         shell: powershell
         run: |
-          $kubeconfigData = "${{ secrets.KUBECONFIG_DATA }}"
+          $kubeconfigData = @"${{ secrets.KUBECONFIG_DATA }}"@
           $kubeconfigPath = "$HOME\.kube\config"
-          $kubeconfigData | Out-File -FilePath $kubeconfigPath -Encoding ascii
-          icacls $kubeconfigPath /inheritance:r /grant:r "$env:USERNAME:(R)"
+          $kubeconfigData | Out-File -FilePath $kubeconfigPath -Encoding ascii -Force
+          # OPTIONAL: skip icacls to avoid permissions issue, unless absolutely needed
 
       - name: Show kubeconfig file after write
         shell: powershell
