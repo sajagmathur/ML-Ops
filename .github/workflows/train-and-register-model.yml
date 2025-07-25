@@ -1,4 +1,4 @@
-name: Train, Log and Deploy Model
+name: Train, Register, and Deploy Model
 
 on:
   push:
@@ -9,8 +9,7 @@ jobs:
     runs-on: IceCream
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set Execution Policy
         run: Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process -Force
@@ -33,7 +32,40 @@ jobs:
           Set-Location Day10/workshop
           python 1_train_model.py
 
-      - name: Log and Register Model
+      - name: Upload model artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: model-artifacts
+          path: |
+            Day10/workshop/model.pkl
+            Day10/workshop/test_data.pkl
+
+  register-model:
+    runs-on: IceCream
+    needs: train-model
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download model artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: model-artifacts
+          path: Day10/workshop
+
+      - name: Set Execution Policy
+        run: Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process -Force
+        shell: powershell
+
+      - name: Create Python environment
+        shell: powershell
+        run: |
+          $envPath = "$env:USERPROFILE\actions-cache\env"
+          if (-not (Test-Path $envPath)) {
+            python -m venv $envPath
+          }
+
+      - name: Register Model with MLflow
         shell: powershell
         run: |
           $envPath = "$env:USERPROFILE\actions-cache\env"
@@ -44,16 +76,21 @@ jobs:
 
   dockerize-model:
     runs-on: IceCream
-    needs: train-model
+    needs: register-model
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Login to Docker Hub
-        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
 
       - name: Build Docker image
-        run: docker build -t yourdockerhubusername/icecream-api:latest .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/icecream-api:latest .
 
       - name: Push Docker image
-        run: docker push yourdockerhubusername/icecream-api:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/icecream-api:latest
+      
