@@ -12,9 +12,9 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Set Execution Policy
-        run: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+        run: Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process -Force
         shell: powershell
-        
+
       - name: Create python environment
         shell: powershell
         run: |
