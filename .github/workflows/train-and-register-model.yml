@@ -151,6 +151,8 @@ jobs:
         with:
           version: 'v1.31.1'
 
+
+
       - name: Configure kubeconfig
         shell: bash
         run: |
@@ -161,8 +163,8 @@ jobs:
       - name: Deploy to Kubernetes
         shell: bash
         run: |
-          kubectl apply -f Day10/workshop/deployment.yaml
-          kubectl apply -f Day10/workshop/service.yaml
+          kubectl apply -f Day10/workshop/deployment.yaml --validate=false
+          kubectl apply -f Day10/workshop/service.yaml --validate=false
 
       - name: Wait for rollout
         shell: bash
