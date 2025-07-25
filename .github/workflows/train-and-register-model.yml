@@ -1,4 +1,4 @@
-name: Train and Register Model
+name: Train, Log and Deploy Model
 
 on:
   push:
@@ -6,36 +6,44 @@ on:
 
 jobs:
   train-model:
-    runs-on: IceCream  # Your self-hosted runner label
+    runs-on: IceCream
 
     steps:
-      - uses: actions/checkout@v3
-      
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Set Execution Policy
         run: Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process -Force
         shell: powershell
 
-      - name: Create python environment
+      - name: Create Python environment
         shell: powershell
         run: |
-          $cacheDir = "$env:USERPROFILE\actions-cache"
-          if (-not (Test-Path $cacheDir)) {
-            New-Item -ItemType Directory -Path $cacheDir | Out-Null
+          $envPath = "$env:USERPROFILE\actions-cache\env"
+          if (-not (Test-Path $envPath)) {
+            python -m venv $envPath
           }
-          python -m venv "$cacheDir\env"
 
-      - name: Train and log to MLflow
+      - name: Train Model
         shell: powershell
         run: |
-          $cacheDir = "$env:USERPROFILE\actions-cache"
-          # Activate virtual environment
-          & "$cacheDir\env\Scripts\Activate.ps1"
-          pip install --quiet mlflow
-          Set-Location -Path Day10/workshop
-          python register.py
+          $envPath = "$env:USERPROFILE\actions-cache\env"
+          & "$envPath\Scripts\Activate.ps1"
+          pip install --quiet pandas scikit-learn joblib
+          Set-Location Day10/workshop
+          python 1_train_model.py
+
+      - name: Log and Register Model
+        shell: powershell
+        run: |
+          $envPath = "$env:USERPROFILE\actions-cache\env"
+          & "$envPath\Scripts\Activate.ps1"
+          pip install --quiet mlflow scikit-learn joblib
+          Set-Location Day10/workshop
+          python 2_register_model.py
 
   dockerize-model:
-    runs-on: IceCream  # Your self-hosted runner label
+    runs-on: IceCream
     needs: train-model
 
     steps:
