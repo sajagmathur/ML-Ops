@@ -120,3 +120,26 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t icecream-api:latest -f Day10/workshop/Dockerfile Day10/workshop
+
+  upload-to-dockerhub:
+    name: Push Docker Image to Docker Hub
+    runs-on: ubuntu-latest
+    needs: build-docker-image  # or replace with the correct dependency job
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Tag image
+        run: |
+          docker tag icecream-api:latest ${{ secrets.DOCKERHUB_USERNAME }}/icecream-api:latest
+
+      - name: Push image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/icecream-api:latest
