@@ -10,7 +10,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
+      
+      - name: Set Execution Policy
+        run: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+        shell: powershell
+        
       - name: Create python environment
         shell: powershell
         run: |
