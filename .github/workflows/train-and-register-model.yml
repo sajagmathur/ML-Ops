@@ -21,3 +21,4 @@ jobs:
           pip install mlflow            
           cd Day10/workshop
           python3 register.py
+
