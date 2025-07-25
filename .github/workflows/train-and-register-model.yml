@@ -90,7 +90,8 @@ jobs:
       - name: Run Docker container locally
         shell: powershell
         run: |
-          docker run -d -p 5001:5001 --name icecream-api icecream-api:latest
+          $imageName = "icecream-api:latest"
+          docker build -t $imageName Day10/workshop
 
       - name: Confirm container is running
         shell: powershell
