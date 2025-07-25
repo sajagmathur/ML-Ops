@@ -20,6 +20,13 @@ jobs:
           if (-not (Test-Path $envPath)) {
             python -m venv $envPath
           }
+      - name: Install Python dependencies
+        shell: powershell
+        run: |
+          $envPath = "$env:USERPROFILE\actions-cache\env"
+          & "$envPath\Scripts\Activate.ps1"
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Train Model
         shell: powershell
