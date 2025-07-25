@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ice Cream Sales Predictor</title>
+    <script>
+        async function getPrediction() {
+            let temp = prompt("Enter temperature in °C:");
+            if (temp === null || temp.trim() === "") {
+                alert("No input provided.");
+                return;
+            }
+
+            let tempValue = parseFloat(temp);
+            if (isNaN(tempValue)) {
+                alert("Please enter a valid number.");
+                return;
+            }
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ temps: [tempValue] })
+            });
+
+            const result = await response.json();
+            alert("Predicted Ice Cream Sales: " + result.predicted_sales[0].toFixed(2));
+        }
+    </script>
+</head>
+<body style="font-family: sans-serif;">
+    <h2>🍦 Ice Cream Sales Predictor</h2>
+    <button onclick="getPrediction()">Predict Sales</button>
+</body>
+</html>
