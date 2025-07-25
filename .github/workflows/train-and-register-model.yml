@@ -6,7 +6,7 @@ on:
 
 jobs:
   train-model:
-    runs-on: ubuntu-latest  # Changed from IceCream to ubuntu-latest for broader compatibility
+    runs-on: IceCream
 
     steps:
       - uses: actions/checkout@v3
@@ -41,7 +41,7 @@ jobs:
             Day10/workshop/test_data.pkl
 
   register-model:
-    runs-on: ubuntu-latest
+    runs-on: IceCream
     needs: train-model
 
     steps:
@@ -75,7 +75,7 @@ jobs:
           python 2_register_model.py
 
   dockerize-model:
-    runs-on: ubuntu-latest
+    runs-on: IceCream
     needs: register-model
 
     steps:
@@ -85,10 +85,16 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+        shell: pwsh
+        run: |
+          echo $env:DOCKER_PASSWORD | docker login --username $env:DOCKER_USERNAME --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/icecream-api:latest .
+        shell: pwsh
+        run: |
+          docker build -t $env:DOCKER_USERNAME/icecream-api:latest .
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/icecream-api:latest
+        shell: pwsh
+        run: |
+          docker push $env:DOCKER_USERNAME/icecream-api:latest
