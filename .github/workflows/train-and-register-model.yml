@@ -38,7 +38,7 @@ jobs:
           & "$envPath\Scripts\Activate.ps1"
           pip install --quiet pandas scikit-learn joblib
           Set-Location -Path Day10/workshop
-          python 1_train_model.py
+          python trainmodel.py
 
       - name: Upload model artifacts
         uses: actions/upload-artifact@v4
@@ -86,7 +86,7 @@ jobs:
           & "$envPath\Scripts\Activate.ps1"
           pip install --quiet mlflow scikit-learn joblib
           Set-Location -Path Day10/workshop
-          python 2_register_model.py
+          python registermodel.py
 
   run-fastapi:
     runs-on: ubuntu-latest
@@ -108,4 +108,4 @@ jobs:
 
       - name: Run FastAPI app
         run: |
-          uvicorn Day10.workshop.app:app --host 0.0.0.0 --port 8000
+          uvicorn app:app --host 0.0.0.0 --port 8000
