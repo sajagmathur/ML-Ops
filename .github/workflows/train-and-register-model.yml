@@ -66,36 +66,43 @@ jobs:
           Set-Location -Path Day10/workshop
           python 2_register_model.py
 
-  dockerize-model:
-      
+  run-app:
     runs-on: IceCream
     needs: register-model
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build Docker image locally
+      - name: Setup Python environment for app
         shell: powershell
         run: |
-          $imageName = "icecream-api:latest"
-          docker build -t $imageName .
+          $envPath = "$env:USERPROFILE\actions-cache\env"
+          if (-not (Test-Path $envPath)) {
+            python -m venv $envPath
+          }
+          & "$envPath\Scripts\Activate.ps1"
+          pip install --quiet fastapi uvicorn numpy
 
-      - name: Stop and remove existing container if it exists
+      - name: Run FastAPI app (app.py)
         shell: powershell
         run: |
-          $containerName = "icecream-api"
-          docker stop $containerName 2>$null
-          docker rm $containerName 2>$null
+          $envPath = "$env:USERPROFILE\actions-cache\env"
+          & "$envPath\Scripts\Activate.ps1"
+          Set-Location -Path Day10/workshop
+          Start-Process -NoNewWindow -FilePath python -ArgumentList "app.py"
 
-      - name: Run Docker container locally
+      - name: Wait a bit for app to start
+        shell: powershell
+        run: Start-Sleep -Seconds 10
+
+      - name: Check app is running
         shell: powershell
         run: |
-          $imageName = "icecream-api:latest"
-          docker build -t $imageName Day10/workshop
-
-      - name: Confirm container is running
-        shell: powershell
-        run: |
-          docker ps -f "name=icecream-api"
-
-    
+          try {
+            Invoke-RestMethod -Uri http://localhost:5001/
+            Write-Host "App is running!"
+          }
+          catch {
+            Write-Host "App did not respond"
+            exit 1
+          }
