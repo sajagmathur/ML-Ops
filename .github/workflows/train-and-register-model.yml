@@ -187,10 +187,10 @@ jobs:
       - name: Wait for ice-cream-api deployment rollout
         run: |
           kubectl rollout status deployment/ice-cream-api --timeout=120s -n default
-
+      
       - name: Wait for ice-cream-api service to be available
         run: |
-          kubectl get svc ice-cream-api -n default --wait --timeout=120s
+           kubectl wait --for=condition=available --timeout=120s svc/ice-cream-api -n defaul
 
       - name: Get Minikube service URL
         run: |
