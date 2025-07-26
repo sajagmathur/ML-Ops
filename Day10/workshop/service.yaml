@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: icecream-service
+  name: ice-cream-service
 spec:
   selector:
     app: icecream-api  # Ensure this matches the label in the Deployment
