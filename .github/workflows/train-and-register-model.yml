@@ -137,36 +137,44 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/icecream-api:latest
 
-  deploy-to-kubernetes:
+  deploy-to-minikube:
     runs-on: ubuntu-latest
-    # Uncomment this if you restore upstream jobs
-    # needs: build-and-push
+    #needs: build-and-push  # Ensure build-and-push is completed before deployment
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up Minikube
+        run: |
+          # Install Minikube
+          curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          chmod +x minikube
+          sudo mv minikube /usr/local/bin/
+
+          # Start Minikube with Docker driver (for GitHub-hosted runners, Docker must be available)
+          minikube start --driver=docker
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: 'v1.31.1'
 
-
-
-      - name: Configure kubeconfig
-        shell: bash
+      - name: Set kubectl context for Minikube
         run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" > ~/.kube/config
-          chmod 600 ~/.kube/config
+          kubectl config use-context minikube
 
-      - name: Deploy to Kubernetes
-        shell: bash
+      - name: Deploy to Minikube
         run: |
+          # Apply Kubernetes configurations
           kubectl apply -f Day10/workshop/deployment.yaml --validate=false
           kubectl apply -f Day10/workshop/service.yaml --validate=false
 
       - name: Wait for rollout
-        shell: bash
         run: |
           kubectl rollout status deployment/ice-cream-api --timeout=120s
+
+      - name: Get Minikube service URL
+        run: |
+          # Get the Minikube URL for the service
+          minikube service ice-cream-api --url
