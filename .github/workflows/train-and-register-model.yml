@@ -1,4 +1,5 @@
 name: Train, Register, and Deploy Model
+
 permissions:
   contents: write
 
@@ -9,7 +10,6 @@ on:
 
 jobs:
   train-model:
-    if : False
     runs-on: IceCream
 
     steps:
@@ -60,7 +60,6 @@ jobs:
           git push
 
   register-model:
-    if : False
     runs-on: IceCream
     needs: train-model
 
@@ -91,7 +90,7 @@ jobs:
           python registermodel.py
 
   run-fastapi:
-    if : False
+    
     runs-on: ubuntu-latest
     needs: register-model
 
@@ -112,10 +111,11 @@ jobs:
       - name: Run FastAPI app
         run: python app.py
         working-directory: Day10/workshop
-  build-and-push:
-    if : False
+
+  build-and-push-to-dockerhub:
     runs-on: ubuntu-latest
     needs: run-fastapi
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -133,36 +133,101 @@ jobs:
       - name: Push Docker image
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/icecream-api:latest
-  
-  deploy-to-kubernetes:
+
+  deploy-to-minikube:
     runs-on: ubuntu-latest
-    # needs: build-and-push  # Make sure your image is pushed first
+    needs: build-and-push-to-dockerhub  # Ensure build-and-push is completed before deployment
+    #needs: build-and-push  # Ensure build-and-push is completed before deployment
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up Minikube
+        run: |
+          # Install Minikube
+          curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          chmod +x minikube
+          sudo mv minikube /usr/local/bin/
+
+          # Start Minikube with Docker driver (for GitHub-hosted runners, Docker must be available)
+          minikube start --driver=docker
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
-          version: 'v1.31.1'  # match your k8s cluster version
+          version: 'v1.31.1'
 
-      - name: Create .kube directory
-        run: mkdir -p $HOME/.kube
-
-      - name: Configure kubeconfig
+      - name: Set kubectl context for Minikube
         run: |
-          echo "${{ secrets.KUBECONFIG_DATA }}" > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
+          kubectl config use-context minikube
+    
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Test kubectl connectivity
-        run: kubectl get nodes
+      - name: Pull Docker image from Docker Hub
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/icecream-api:latest
+
+      - name: Load Docker image into Minikube
+        run: |
+          minikube image load ${{ secrets.DOCKER_USERNAME }}/icecream-api:latest
+
+      - name: Deploy to Minikube
+        run: |
+          # Apply Kubernetes configurations
+          kubectl apply -f Day10/workshop/deployment.yaml --validate=false
+          kubectl apply -f Day10/workshop/service.yaml --validate=false
+      - name: Wait for ice-cream-api deployment rollout
+        run: |
+          kubectl rollout status deployment/ice-cream-api --timeout=300s -n default
       
-      - name: Deploy to Kubernetes
+      - name: Check Deployment Status
         run: |
-          kubectl apply -f Day10/workshop/deployment.yaml
-          kubectl apply -f Day10/workshop/service.yaml
+          kubectl get deployments -n default
+          kubectl get pods -n default
+          kubectl describe deployment ice-cream-api -n default
+      - name: Get Pod Name
+        id: pod_name
+        run: |
+          # Extract the pod name dynamically based on the deployment
+          POD_NAME=$(kubectl get pods -n default -l app=ice-cream-api -o jsonpath='{.items[0].metadata.name}')
+          echo "Pod Name is $POD_NAME"
+          echo "::set-output name=pod_name::$POD_NAME"
 
-      - name: Wait for deployment to be ready
+      - name: Wait for Pod to be Running
         run: |
-          kubectl rollout status deployment/ice-cream-api --timeout=120s
+          kubectl wait --for=condition=ready pod -l app=ice-cream-api -n default --timeout=300s
+
+      - name: Get Pod Logs
+        run: |
+          kubectl logs ${{ steps.pod_name.outputs.pod_name }} -n default
+
+      - name: Check Service Status
+        run: |
+          kubectl get svc -n default
+          kubectl describe svc ice-cream-service -n default
+
+ # Extract and Push the Final Container from Minikube to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract the Final Container from Minikube and Push to Docker Hub
+        run: |
+          # Get the image name used by the deployment
+          IMAGE_NAME=$(kubectl get deployment ice-cream-api -n default -o=jsonpath='{.spec.template.spec.containers[0].image}')
+          
+          # Ensure the image is available in Minikube's local Docker
+          eval $(minikube docker-env)
+
+          # Tag the deployed container with your Docker Hub username
+          docker tag $IMAGE_NAME ${{ secrets.DOCKER_USERNAME }}/ice-cream-container:final
+
+          # Push the final container to Docker Hub
+          docker push ${{ secrets.DOCKER_USERNAME }}/ice-cream-container:final

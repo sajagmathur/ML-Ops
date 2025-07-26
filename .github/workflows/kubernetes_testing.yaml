@@ -1,38 +1,64 @@
 name: Debug Kubernetes Connectivity
 
 on:
-  workflow_dispatch:  # manually trigger
+  workflow_dispatch:  # Manually trigger
 
 jobs:
   kubectl-connectivity-check:
-    runs-on: self-hosted  # make sure this matches your runner label
+    runs-on: self-hosted  # Use your own label if different
 
     steps:
       - name: Show current user
+        shell: powershell
         run: whoami
 
       - name: List .kube directory contents
-        run: ls -la ~/.kube || echo ".kube directory does not exist"
+        shell: powershell
+        run: |
+          if (Test-Path "$env:USERPROFILE\.kube") {
+            Get-ChildItem "$env:USERPROFILE\.kube" -Force
+          } else {
+            Write-Output ".kube directory does not exist"
+          }
 
       - name: Show kubeconfig content
-        run: cat ~/.kube/config || echo "No kubeconfig file found"
+        shell: powershell
+        run: |
+          $kubeConfig = "$env:USERPROFILE\.kube\config"
+          if (Test-Path $kubeConfig) {
+            Get-Content $kubeConfig
+          } else {
+            Write-Output "No kubeconfig file found"
+          }
 
       - name: Create .kube directory if missing
-        run: mkdir -p ~/.kube
+        shell: powershell
+        run: |
+          $kubeDir = "$env:USERPROFILE\.kube"
+          if (-not (Test-Path $kubeDir)) {
+            New-Item -ItemType Directory -Path $kubeDir | Out-Null
+          }
 
       - name: Setup kubeconfig from secret
+        shell: powershell
         run: |
-          echo "${{ secrets.KUBECONFIG_DATA }}" > ~/.kube/config
-          chmod 600 ~/.kube/config
+          $kubeconfigData = "${{ secrets.KUBECONFIG_DATA }}"
+          $kubeconfigPath = "$env:USERPROFILE\.kube\config"
+          $kubeconfigData | Out-File -FilePath $kubeconfigPath -Encoding ascii -Force
 
       - name: Show kubeconfig file after write
-        run: cat ~/.kube/config
+        shell: powershell
+        run: Get-Content "$env:USERPROFILE\.kube\config"
 
       - name: Check kubectl version
+        shell: powershell
         run: kubectl version --client
 
       - name: Get Kubernetes nodes
+        shell: powershell
         run: kubectl get nodes
 
       - name: Get pods in all namespaces
+        shell: powershell
         run: kubectl get pods --all-namespaces
+#tryagain

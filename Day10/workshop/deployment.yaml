@@ -15,11 +15,10 @@ spec:
         app: ice-cream-api
     spec:
       containers:
-        - name: ice-cream-api
-          image: sajagmathur/icecream-api   # <-- Make sure this matches your Docker Hub repo exactly!
+        - name: train-register-deploy-model
+          image: sajagmathur/icecream-api
           command: ["python"]
-          args:
-            - app.py
+          args: ["app.py"]
           ports:
             - containerPort: 5001
           imagePullPolicy: IfNotPresent
