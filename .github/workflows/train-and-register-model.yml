@@ -216,4 +216,4 @@ jobs:
  
       - name: Get Minikube service URL
         run: |
-          minikube service ice-cream-api -n default --url
+          minikube service ice-cream-service -n default --url
