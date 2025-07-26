@@ -5,10 +5,9 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: ice-cream-api
+    app: ice-cream-api  # Ensure this matches the label of the Deployment
   ports:
     - protocol: TCP
-      port: 5001         # Service port inside the cluster
-      targetPort: 5001   # Port your container listens on
-      nodePort: 32001    # External port exposed on node (must be 30000-32767)
-      # You can change nodePort to any available port in the range 30000-32767
+      port: 5001            # Service port
+      targetPort: 5001      # Container port
+      nodePort: 32001       # Minikube exposes it on localhost:32001
