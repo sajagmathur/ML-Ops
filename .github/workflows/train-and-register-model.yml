@@ -184,10 +184,21 @@ jobs:
           kubectl apply -f Day10/workshop/deployment.yaml --validate=false
           kubectl apply -f Day10/workshop/service.yaml --validate=false
 
+      - name: Check Deployment Status
+        run: |
+          kubectl get deployments -n default
+          kubectl get pods -n default
+          kubectl describe deployment ice-cream-api -n default
+
       - name: Wait for ice-cream-api deployment rollout
         run: |
           kubectl rollout status deployment/ice-cream-api --timeout=120s -n default
       
+      - name: Check Service Status
+        run: |
+          kubectl get svc -n default
+          kubectl describe svc ice-cream-service -n default
+
       - name: Wait for ice-cream-api service to be available
         run: |
            kubectl wait --for=condition=available --timeout=120s svc/ice-cream-service -n default
