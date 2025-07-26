@@ -190,7 +190,7 @@ jobs:
       
       - name: Wait for ice-cream-api service to be available
         run: |
-           kubectl wait --for=condition=available --timeout=120s svc/ice-cream-api -n defaul
+           kubectl wait --for=condition=available --timeout=120s svc/ice-cream-api -n default
 
       - name: Get Minikube service URL
         run: |
