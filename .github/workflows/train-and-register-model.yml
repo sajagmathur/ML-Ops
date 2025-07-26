@@ -183,17 +183,27 @@ jobs:
           # Apply Kubernetes configurations
           kubectl apply -f Day10/workshop/deployment.yaml --validate=false
           kubectl apply -f Day10/workshop/service.yaml --validate=false
-
+      - name: Wait for ice-cream-api deployment rollout
+        run: |
+          kubectl rollout status deployment/ice-cream-api --timeout=300s -n default
+      
       - name: Check Deployment Status
         run: |
           kubectl get deployments -n default
           kubectl get pods -n default
           kubectl describe deployment ice-cream-api -n default
-
-      - name: Wait for ice-cream-api deployment rollout
+      - name: Get Pod Name
+        id: pod_name
         run: |
-          kubectl rollout status deployment/ice-cream-api --timeout=120s -n default
-      
+          # Extract the pod name dynamically based on the deployment
+          POD_NAME=$(kubectl get pods -n default -l app=ice-cream-api -o jsonpath='{.items[0].metadata.name}')
+          echo "Pod Name is $POD_NAME"
+          echo "::set-output name=pod_name::$POD_NAME"
+
+      - name: Get Pod Logs
+        run: |
+          kubectl logs ${{ steps.pod_name.outputs.pod_name }} -n default
+
       - name: Check Service Status
         run: |
           kubectl get svc -n default
