@@ -200,6 +200,10 @@ jobs:
           echo "Pod Name is $POD_NAME"
           echo "::set-output name=pod_name::$POD_NAME"
 
+      - name: Wait for Pod to be Running
+        run: |
+          kubectl wait --for=condition=ready pod -l app=ice-cream-api -n default --timeout=300s
+
       - name: Get Pod Logs
         run: |
           kubectl logs ${{ steps.pod_name.outputs.pod_name }} -n default
@@ -209,10 +213,7 @@ jobs:
           kubectl get svc -n default
           kubectl describe svc ice-cream-service -n default
 
-      - name: Wait for ice-cream-api service to be available
-        run: |
-           kubectl wait --for=condition=available --timeout=240s svc/ice-cream-service -n default
-
+ 
       - name: Get Minikube service URL
         run: |
           minikube service ice-cream-api -n default --url
