@@ -184,11 +184,14 @@ jobs:
           kubectl apply -f Day10/workshop/deployment.yaml --validate=false
           kubectl apply -f Day10/workshop/service.yaml --validate=false
 
-      - name: Wait for rollout
+      - name: Wait for ice-cream-api deployment rollout
         run: |
-          kubectl rollout status deployment/ice-cream-api --timeout=120s
+          kubectl rollout status deployment/ice-cream-api --timeout=120s -n default
+
+      - name: Wait for ice-cream-api service to be available
+        run: |
+          kubectl get svc ice-cream-api -n default --wait --timeout=120s
 
       - name: Get Minikube service URL
         run: |
-          # Get the Minikube URL for the service
-          minikube service ice-cream-api --url
+          minikube service ice-cream-api -n default --url
