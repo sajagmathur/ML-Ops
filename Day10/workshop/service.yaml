@@ -4,9 +4,10 @@ metadata:
   name: ice-cream-service
 spec:
   selector:
-    app: icecream-api  # Ensure this matches the label in the Deployment
+    app: icecream-api
   ports:
     - protocol: TCP
       port: 80         # Exposed port outside the cluster
-      targetPort: 8000  # The port the app is actually listening on inside the container
-  type: LoadBalancer   # This makes it accessible externally (use NodePort for internal access only)
+      targetPort: 8000  # The port inside the container
+      nodePort: 31244   # Port available on the node
+  type: NodePort      # Change to NodePort for local setups
