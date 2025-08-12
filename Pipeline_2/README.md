@@ -1,4 +1,5 @@
-CI CD Pipeline Infrastructure (Type 2):
+# CI CD Pipeline Infrastructure (Type 2):
+
 i. Code Repository: GitHub
 
 ii. Code IDE: DataBricks
