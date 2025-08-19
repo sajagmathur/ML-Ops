@@ -15,3 +15,5 @@ CI CD Pipeline Infrastructure (Type 1):
   vii. Data: Stored on Github
 	
   viii. App Deployment: Command Line prediction through Fast API
+
+Initiate Dry Run
