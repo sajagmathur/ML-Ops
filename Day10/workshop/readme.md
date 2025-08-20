@@ -17,3 +17,4 @@ CI CD Pipeline Infrastructure (Type 1):
   viii. App Deployment: Command Line prediction through Fast API
 
 Initiate Dry Run
+Initiate Demo
