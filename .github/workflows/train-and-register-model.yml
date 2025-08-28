@@ -10,7 +10,7 @@ on:
 
 jobs:
   train-model:
-    runs-on: ubuntu-latest
+    runs-on: IceCream
 
     steps:
       - uses: actions/checkout@v3
