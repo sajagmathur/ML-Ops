@@ -2,9 +2,9 @@ import pandas as pd
 import joblib
 import numpy as np
 
-from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset, RegressionPreset, DataQualityPreset
-from evidently.metrics import ColumnValueRangeMetric, ColumnHistogramMetric
+from evidently.core.report import Report
+from evidently.presets import DataDriftPreset
+from evidently.metrics import MinValue, MaxValue, MeanValue, StdValue, MAE, RMSE, R2Score
 
 # 1. Load trained model
 model = joblib.load("model.pkl")
@@ -17,21 +17,23 @@ current_data = pd.read_csv("current_data.csv")
 reference_data["prediction"] = model.predict(reference_data[["temp"]])
 current_data["prediction"] = model.predict(current_data[["temp"]])
 
-# 4. Build full report with multiple metric sets
+
+# 4. Build the report
 report = Report(metrics=[
-    DataDriftPreset(),  # Checks for feature distribution changes
-    RegressionPreset(target_column="price", prediction_column="prediction"),  # MAE, RMSE, R²
-    DataQualityPreset(),  # Missing values, types, etc.
-    
-    # 🔍 Custom distribution metrics
-    ColumnHistogramMetric(column_name="temp"),
-    ColumnValueRangeMetric(column_name="temp"),
-    ColumnHistogramMetric(column_name="price"),
-    ColumnValueRangeMetric(column_name="price")
+    DataDriftPreset(),
+    MinValue(column="temp"),
+    MaxValue(column="temp"),
+    MeanValue(column="temp"),
+    StdValue(column="temp"),
+    MinValue(column="price"),
+    MaxValue(column="price"),
+    MeanValue(column="price"),
+    StdValue(column="price"),
 ])
 
-# 5. Run and save the report
-report.run(reference_data=reference_data, current_data=current_data)
-report.save_html("evidently_report.html")
 
+# 5. Run and save the report
+
+result = report.run(reference_data=reference_data, current_data=current_data)
+result.save_html("evidently_report.html")
 print("✅ Evidently report generated: evidently_report.html")
