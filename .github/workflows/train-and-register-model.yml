@@ -231,6 +231,7 @@ jobs:
 
           # Push the final container to Docker Hub
           docker push ${{ secrets.DOCKER_USERNAME }}/ice-cream-container:final
+
   
   monitor-with-evidently:
     name: Monitor with Evidently
@@ -259,3 +260,4 @@ jobs:
         with:
           name: evidently-report
           path: Day10/workshop/evidently_report.html
+
