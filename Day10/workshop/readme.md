@@ -18,3 +18,4 @@ CI CD Pipeline Infrastructure (Type 1):
 
 Initiate Dry Run
 Initiate Demo 1
+Initiate Demo 2
